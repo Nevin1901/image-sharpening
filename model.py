@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision
 
 
 class Sharp(nn.Module):
@@ -24,11 +25,11 @@ class Sharp(nn.Module):
                 nn.Sigmoid()
                 )
 
-        def forward(self, x):
-            x = self.flatten(x)
-            encoded = self.encoder(x)
-            decoded = self.decoder(encoded)
-            return decoded
+    def forward(self, x):
+        x = self.flatten(x)
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+        return decoded
 
 
 
