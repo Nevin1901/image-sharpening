@@ -25,7 +25,7 @@ class BlurredImageDataset(Dataset):
 def train_loop(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to("cuda"), y.to("cuda")
+        X, y = X.to("cuda"), torch.flatten(y.to("cuda"), start_dim=1)
         pred = model(X)
         loss = loss_fn(pred, y)
 
@@ -45,7 +45,7 @@ def test_loop(dataloader, model, loss_fn):
 
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.to("cuda"), y.to("cuda")
+            X, y = X.to("cuda"), torch.flatten(y.to("cuda"), start_dim=1)
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
 
@@ -78,13 +78,17 @@ def get_data(save):
 
         for x in training_data:
             blur = cv.blur(np.asarray(x[0]), (7, 7))
-            x_train.append(torch.from_numpy(blur).float())
-            y_train.append(transform(x[0]))
+            blur = torch.from_numpy(blur).float()
+            y = transform(x[0]).float()
+            x_train.append(blur)
+            y_train.append(y[0])
 
         for x in test_data:
             blur = cv.blur(np.asarray(x[0]), (7, 7))
-            x_test.append(torch.from_numpy(blur).float())
-            y_test.append(transform(x[0]))
+            blur = torch.from_numpy(blur).float()
+            y = transform(x[0]).float()
+            x_test.append(blur)
+            y_test.append(y[0])
 
         with open('x_train.pkl', 'wb') as f:
             pickle.dump(x_train, f)
@@ -117,7 +121,7 @@ def get_data(save):
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    save = True
+    save = False
     print(f"{device}")
 
     x_train, y_train, x_test, y_test = get_data(save)

@@ -1,2 +1,6 @@
 data/
 __pycache__/
+x_test.pkl
+x_train.pkl
+y_test.pkl
+y_train.pkl

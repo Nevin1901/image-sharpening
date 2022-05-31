@@ -3,25 +3,39 @@ import torch.nn as nn
 import torchvision
 
 
+class Print(nn.Module):
+    def __init__(self):
+        super(Print, self).__init__()
+    
+    def forward(self, x):
+        print("got here")
+        return x
+
 class Sharp(nn.Module):
     def __init__(self):
         super(Sharp, self).__init__()
         self.flatten = nn.Flatten()
         self.encoder = nn.Sequential(
-                nn.Linear(28*28, 512),
+                nn.Linear(28*28, 128),
                 nn.ReLU(),
-                nn.Linear(512, 512),
+                nn.Linear(128, 64),
                 nn.ReLU(),
-                nn.Linear(512, 218),
+                nn.Linear(64, 36),
                 nn.ReLU(),
-                nn.Linear(218, 48),
+                nn.Linear(36, 18),
+                nn.ReLU(),
+                nn.Linear(18, 9),
                 )
         self.decoder = nn.Sequential(
-                nn.Linear(48, 218),
+                nn.Linear(9, 18),
                 nn.ReLU(),
-                nn.Linear(218, 512),
+                nn.Linear(18, 36),
                 nn.ReLU(),
-                nn.Linear(512, 28*28),
+                nn.Linear(36, 64),
+                nn.ReLU(),
+                nn.Linear(64, 128),
+                nn.ReLU(),
+                nn.Linear(128, 28*28),
                 nn.Sigmoid()
                 )
 
