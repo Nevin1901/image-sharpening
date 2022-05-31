@@ -27,6 +27,9 @@ def train_loop(dataloader, model, loss_fn, optimizer):
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to("cuda"), torch.flatten(y.to("cuda"), start_dim=1)
         pred = model(X)
+
+        plt.imshow(X[0].cpu())
+        plt.show()
         loss = loss_fn(pred, y)
 
         optimizer.zero_grad()
@@ -55,6 +58,7 @@ def test_loop(dataloader, model, loss_fn):
 
 
 def get_data(save):
+    files = ["x_train.pkl", "y_train.pkl", "x_test.pkl", "y_test.pkl"]
     transform = transforms.Compose([
         transforms.PILToTensor()
         ])
@@ -63,6 +67,7 @@ def get_data(save):
 
     x_test = []
     y_test = []
+
     if save == True:
         training_data = datasets.MNIST(
                 root="data",
@@ -136,7 +141,7 @@ if __name__ == "__main__":
 
     model = Sharp().to(device)
 
-    learning_rate = 1e-3
+    learning_rate = 1e-1
     batch_size = 64
     epochs = 40
 
@@ -144,7 +149,7 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(
             model.parameters(),
-            lr = 1e-3,
+            lr = 1e-1,
             weight_decay=1e-8)
 
     for i in range(epochs):
