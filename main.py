@@ -28,7 +28,7 @@ def train_loop(dataloader, model, loss_fn, optimizer):
         X, y = X.to("cuda"), torch.flatten(y.to("cuda"), start_dim=1)
         pred = model(X)
 
-        plt.imshow(X[0].cpu())
+        plt.imshow(np.reshape(pred[0].cpu().detach().numpy(), (28, 28)))
         plt.show()
         loss = loss_fn(pred, y)
 
@@ -82,7 +82,7 @@ def get_data(save):
                 )
 
         for x in training_data:
-            blur = cv.blur(np.asarray(x[0]), (7, 7))
+            blur = cv.blur(np.asarray(x[0]), (1, 1))
             blur = torch.from_numpy(blur).float()
             y = transform(x[0]).float()
             x_train.append(blur)
@@ -127,11 +127,10 @@ def get_data(save):
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     save = False
-    print(f"{device}")
 
+    print("getting data")
     x_train, y_train, x_test, y_test = get_data(save)
-    print(type(x_train[0]))
-    print(type(y_train[0]))
+    # train_data, test_data = get_data(save)
 
     train_dataset = BlurredImageDataset(x_train, y_train)
     test_dataset = BlurredImageDataset(x_test, y_test)
@@ -139,6 +138,7 @@ if __name__ == "__main__":
     train_dataloader = DataLoader(train_dataset, batch_size=64, pin_memory=True)
     test_dataloader = DataLoader(test_dataset, batch_size=64, pin_memory=True)
 
+    print("starting model")
     model = Sharp().to(device)
 
     learning_rate = 1e-1
@@ -154,6 +154,19 @@ if __name__ == "__main__":
 
     for i in range(epochs):
         print(f"Epoch {i+1}\n")
+
+#         for (image, _) in train_dataloader:
+#             image = image.to("cuda")
+#             print("got here")
+#             pred = model(image)
+# 
+#             # cv.imshow("frame1", np.reshape(pred.cpu(), (28, 28)))
+#             loss = loss_fn(pred, image)
+# 
+#             optimizer.zero_grad()
+#             loss.backward()
+#             optimizer.step()
+#             print("ok")
 
         train_loop(train_dataloader, model, loss_fn, optimizer)
         test_loop(test_dataloader, model, loss_fn)

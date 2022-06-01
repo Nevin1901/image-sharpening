@@ -41,6 +41,7 @@ class Sharp(nn.Module):
 
     def forward(self, x):
         x = self.flatten(x)
+        print(x.shape)
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded
